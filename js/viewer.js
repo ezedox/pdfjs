@@ -895,9 +895,9 @@ var _view_history = __webpack_require__(32);
 var DEFAULT_SCALE_DELTA = 1.1;
 var DISABLE_AUTO_FETCH_LOADING_BAR_TIMEOUT = 5000;
 function configure(PDFJS) {
-  PDFJS.imageResourcesPath = '//srkchandru.github.io/preview-assets/img/';
-  PDFJS.workerSrc = '//srkchandru.github.io/preview-assets/js/pdf.worker.min.js'; /***/
-  PDFJS.cMapUrl = '//srkchandru.github.io/preview-assets/cmaps/';
+  PDFJS.imageResourcesPath = '//cdn.jsdelivr.net/npm/ezedox_pdfjs@0.0.1/img/';
+  PDFJS.workerSrc = '//cdn.jsdelivr.net/npm/ezedox_pdfjs@0.0.1/js/pdf.worker.min.js';
+  PDFJS.cMapUrl = '//cdn.jsdelivr.net/npm/ezedox_pdfjs@0.0.1/cmaps/';
   PDFJS.cMapPacked = true;
 }
 var DefaultExternalServices = {
