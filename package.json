@@ -1,6 +1,6 @@
 {
   "name": "pdfjs",
-  "version": "1.9.426",
+  "version": "0.0.1",
   "main": "build/pdf.js",
   "description": "Generic build of Mozilla's PDF.js library.",
   "keywords": [
