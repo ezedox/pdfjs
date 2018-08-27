@@ -895,9 +895,9 @@ var _view_history = __webpack_require__(32);
 var DEFAULT_SCALE_DELTA = 1.1;
 var DISABLE_AUTO_FETCH_LOADING_BAR_TIMEOUT = 5000;
 function configure(PDFJS) {
-  PDFJS.imageResourcesPath = '//cdn.jsdelivr.net/npm/ezedox_pdfjs@0.0.1/img/';
-  PDFJS.workerSrc = '//cdn.jsdelivr.net/npm/ezedox_pdfjs@0.0.1/js/pdf.worker.min.js';
-  PDFJS.cMapUrl = '//cdn.jsdelivr.net/npm/ezedox_pdfjs@0.0.1/cmaps/';
+  PDFJS.imageResourcesPath = '//cdn.jsdelivr.net/npm/ezedox_pdfjs@0.0.3/img/';
+  PDFJS.workerSrc = '//cdn.jsdelivr.net/npm/ezedox_pdfjs@0.0.3/js/pdf.worker.min.js';
+  PDFJS.cMapUrl = '//cdn.jsdelivr.net/npm/ezedox_pdfjs@0.0.3/cmaps/';
   PDFJS.cMapPacked = true;
 }
 var DefaultExternalServices = {
@@ -6627,6 +6627,83 @@ var PDFPageView = function () {
         esignCursorWrapper.appendChild(esignCursoritem);
         
         textLayerDiv.appendChild(esignCursorWrapper);
+
+        /*+++*/
+        /*++++++++++++++++++++  ezeDox previewer ++++++++++++++++++*/
+        // If contract signing is active, reprint the signature placeholders
+
+        function flatten(arr) {
+          return arr.reduce(function (flat, toFlatten) {
+            return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
+          }, []);
+        }
+        
+        try {
+          if (document.getElementById("preview-modal")) {
+            var currentPageNo = this.id;
+            var docId = document.getElementById("preview-modal").getAttribute("data-preview");
+            var currentDocument = documentManager.getInstance().documents.get(docId);
+        
+            if (currentDocument) {
+              var isSigningAllowed = false;
+              if (currentDocument.temp_category === "shared" && currentDocument.signingStatus === "NOTSIGNED") {
+                isSigningAllowed = true;
+              } else if (currentDocument.temp_category === "unorganized" && currentDocument.isSignedByOwner === "false") {
+                isSigningAllowed = true;
+              }
+        
+              if (isSigningAllowed) {
+        
+                if (Array.isArray(currentDocument.coordinates) && currentDocument.coordinates.length) {
+                  currentDocument.coordinates.forEach(function (coordinate) {
+                    if (coordinate.page === currentPageNo) {
+                      var values = {
+                        pageNo: coordinate.page,
+                        left: coordinate.left,
+                        top: coordinate.top,
+                        pageWidth: div.style.width,
+                        pageHeight: div.style.width
+                      };
+                      var placeholderDiv = createSignaturePlaceholders(values);
+                      esignCursorWrapper.appendChild(placeholderDiv);
+                    }
+                  });
+        
+                  // to show the placeholders
+                  // and to Increase the opacity of textlayer
+                  textLayerDiv.classList.add('show-placeholder');
+                } else {
+        
+                  var arr = Array.from(currentDocument._contractPlaceholders, function (v, i) {
+                    return v[1];
+                  });
+        
+                  var signaturePlaceholders = flatten(arr);
+                  var currentPagePlaceholders = signaturePlaceholders.filter(function (signaturePlaceholder) {
+                    return signaturePlaceholder.page && signaturePlaceholder.page === currentPageNo;
+                  });
+        
+                  if (document.getElementById("preview-modal").classList.contains("contract-signing-active")) {
+                    currentPagePlaceholders.forEach(function (placeholder) {
+                      var placeholderDiv = document.createElement("div");
+                      placeholderDiv.id = placeholder.id;
+                      placeholderDiv.className += " contract-esign-placeholder";
+                      placeholderDiv.setAttribute("data-party-id", placeholder.partyId);
+                      placeholderDiv.style.width = placeholder.width;
+                      placeholderDiv.style.height = placeholder.height;
+                      placeholderDiv.style.left = placeholder.leftPercentage;
+                      placeholderDiv.style.top = placeholder.topPercentage;
+                      var partyEmailId = $("#" + placeholder.partyId).find(".share-email-input") ? $("#" + placeholder.partyId).find(".share-email-input").val() : "";
+                      placeholderDiv.innerHTML = "<span class='contract-esign-placeholder-text'>" + partyEmailId + "</span>";
+                      esignCursorWrapper.appendChild(placeholderDiv);
+                    });
+                  }
+                }
+              }
+            }
+          }
+        } catch (error) {}
+
         /*+++*/
 
 

@@ -1,6 +1,6 @@
 {
   "name": "ezedox_pdfjs",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "build/pdf.js",
   "description": "Generic build of Mozilla's PDF.js library.",
   "keywords": [
